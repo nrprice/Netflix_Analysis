@@ -73,15 +73,22 @@ def time_convert(time):
         return 0
     return int(time)
 
+answer = input("Want to start again? - Warning. Will take a long time to request all episode times from scratch")
+print ('Enter Y for Y, or anything else for N')
+
+if answer.lower() == 'y':
+    # Wipes existing data and starts again
+    existing_netflix = pd.read_excel('netflix_parsed.xlsx', nrows=0)
+else:
+    # Pre Existing already calculated netflix data
+    existing_netflix = pd.read_excel('netflix_parsed.xlsx')
+
 
 # Importing and cleaning of the new netflix data.
 new_netflix_data = pd.read_excel('NetflixViewingHistory.xlsx')
 new_netflix_data.columns = [x.lower() for x in new_netflix_data.columns]
 new_netflix_data = new_netflix_data[new_netflix_data['date'].dt.year >= 2020]
 new_netflix_data['show_name'] = new_netflix_data['title'].apply(lambda x: x.split(':')[0])
-
-# Pre Existing already calculated netflix data
-existing_netflix = pd.read_excel('netflix_parsed.xlsx')
 
 # Merge the new with the old and find length of episode
 netflix_combined = pd.concat([existing_netflix, new_netflix_data], ignore_index=True, sort=False).drop_duplicates('title').reset_index(drop=True)
